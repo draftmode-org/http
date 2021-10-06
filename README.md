@@ -1,4 +1,5 @@
-# terrazza/http
+# The Http Component
+This component is for any interaction with/from Http
 
 required PHP extensions:
 - ext-curl
