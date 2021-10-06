@@ -1,0 +1,34 @@
+{
+    "name": "terrazza/component-http",
+    "version": "1.0.1",
+    "description": "http",
+    "license": "MIT",
+    "config" : {
+        "vendor-dir" : "plugin"
+    },
+    "authors": [
+        {
+            "name": "Peter Fux",
+            "email": "it@noframework.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "psr/http-message": "1.*",
+        "psr/http-client": "1.*",
+        "psr/http-factory": "1.*",
+        "psr/http-server-handler": "1.*",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-fileinfo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Terrazza\\Component\\Http\\" : "src"
+        }
+    },
+    "require-dev" : {
+        "phpunit/phpunit": "^9.3"
+    },
+    "minimum-stability": "dev"
+}

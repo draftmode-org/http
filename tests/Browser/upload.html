@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title>test upload by chunk</title>
+</head>
+<body>
+<input type="file" id="f" />
+<script>
+  (function() {
+    var f         = document.getElementById('f');
+    var uri       = "http://localhost/terrazza/framework/component/Http/tests/Browser/upload.php";
+    var sliceSize = 221256;
+
+    if (f.files.length)
+      processFile();
+    f.addEventListener('change', processFile, false);
+
+    function processFile(e) {
+      console.log("processFile with sliceSize: " + sliceSize);
+      sendFile(f.files[0], 0, 0);
+    }
+
+    function sendFile(file, start, end) {
+      var formdata  = new FormData();
+      var xhr       = new XMLHttpRequest();
+      var size      = file.size;
+
+      if (end === 0) {
+        end         = start + (sliceSize * 2);
+      }
+      if (size - end < 0) {
+        end         = size;
+      }
+
+      if (end < size) {
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            console.log("readyState after sending chunk");
+            sendFile(file, start + sliceSize, start + (sliceSize * 2));
+          }
+        }
+      } else {
+        console.log('upload complete');
+      }
+
+      xhr.open('POST', uri, true);
+
+      var slicedPart = slice(file, start, end);
+      formdata.append('start', start);
+      formdata.append('end', end);
+      formdata.append('file', slicedPart);
+      console.log('xhr.send chunk (start - end): ' + start + ' ' + end);
+      xhr.send(formdata);
+    }
+
+    /**
+     * Formalize file.slice
+     */
+
+    function slice(file, start, end) {
+      var slice = file.mozSlice ? file.mozSlice :
+                  file.webkitSlice ? file.webkitSlice :
+                  file.slice ? file.slice : noop;
+
+      return slice.bind(file)(start, end);
+    }
+    function noop() {}
+
+  })();
+</script>
+</body>
+</html>
