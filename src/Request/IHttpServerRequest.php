@@ -9,4 +9,6 @@ interface IHttpServerRequest extends ServerRequestInterface {
     //
     public function getPathParam(string $routeUri, string $argumentName) :?string;
     public function getQueryParam(string $argumentName) :?string;
+    //
+    public function isValidBody() : void;
 }

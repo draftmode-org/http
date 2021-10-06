@@ -123,7 +123,7 @@ trait HttpMessageHelper {
     }
 
     public function getBody(): IHttpStream {
-        return $this->stream ??= (new HttpStreamFactory)->createStream('');
+        return $this->stream ??= (new HttpStreamFactory)->createStream($this->body ?? "");
     }
 
     public function withBody(StreamInterface $body): self {

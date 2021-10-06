@@ -118,6 +118,19 @@ class HttpServerRequest implements IHttpServerRequest {
         return $this->parsedBody;
     }
 
+    public function isValidBody() : void {
+        $contentType                                = $this->getHeaderLine("Content-Type");
+        if ($this->body) {
+            $invalidContentMessage                  = "body is malformed/invalid, expected type $contentType";
+            if (preg_match("#application/json#", $contentType)) {
+                json_decode($this->body);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new InvalidArgumentException($invalidContentMessage, 400);
+                }
+            }
+        }
+    }
+
     /**
      * @param array|object|null $data
      * @return static

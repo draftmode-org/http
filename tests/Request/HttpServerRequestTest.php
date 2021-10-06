@@ -39,6 +39,31 @@ class HttpServerRequestTest extends TestCase {
         ]);
     }
 
+    function testValidBody() {
+        $body                                       = json_encode([
+            "id"                                    => $id = 1
+        ]);
+        $httpRequest                                = new HttpServerRequest(
+            "GET",
+            "localhost", [
+            "Content-Type" => "application/json"
+        ],
+            $body);
+        $httpRequest->isValidBody();
+        $this->assertTrue(true);
+    }
+
+    function testInValidJsonBody() {
+        $httpRequest                                = new HttpServerRequest(
+            "GET",
+            "localhost", [
+            "Content-Type" => "application/json"
+        ],
+            "test");
+        $this->expectException(InvalidArgumentException::class);
+        $httpRequest->isValidBody();
+    }
+
     function testParsedBodyFailure() {
         $request = new HttpServerRequest("GET", "https://www.google.at");
         $this->expectException(InvalidArgumentException::class);
