@@ -1,7 +1,7 @@
 {
     "name": "terrazza/http",
     "version": "1.0.1",
-    "description": "http",
+    "description": "Terrazza Component Http",
     "license": "MIT",
     "config" : {
         "vendor-dir" : "plugin"
