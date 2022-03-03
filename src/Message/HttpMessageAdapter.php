@@ -51,10 +51,9 @@ class HttpMessageAdapter implements IHttpMessageAdapter {
 
     /**
      * @return array|false
-     * @codeCoverageIgnore
      */
     protected function getAllHeaders() {
-        return getallheaders();
+        return (function_exists("\getallheaders")) ? getallheaders() : [];
     }
 
     /**

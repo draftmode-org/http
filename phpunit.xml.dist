@@ -2,8 +2,8 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
          colors="true"
-         cacheResult ="false"
          bootstrap="plugin/autoload.php"
+         cacheResult ="false"
          failOnRisky="true"
          failOnWarning="true">
   <coverage>
@@ -16,7 +16,7 @@
       <file>src/Client/Exception/HttpClientUnsupportedProtocolVersionException.php</file>
     </exclude>
     <report>
-      <html outputDirectory="./.report"/>
+      <html outputDirectory="./tests/.report"/>
     </report>
   </coverage>
   <php>

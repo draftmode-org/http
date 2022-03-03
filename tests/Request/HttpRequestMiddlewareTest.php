@@ -5,18 +5,18 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Terrazza\Component\Http\Request\HttpClientRequest;
-use Terrazza\Component\Http\Request\HttpRequestMiddlewareMiddleware;
+use Terrazza\Component\Http\Request\HttpRequestMiddleware;
 use Terrazza\Component\Http\Request\IHttpClientRequest;
 use Terrazza\Component\Http\Request\IHttpRequestHandler;
 use Terrazza\Component\Http\Request\IHttpRequestMiddleware;
 use Terrazza\Component\Http\Response\HttpResponse;
 use Terrazza\Component\Http\Response\IHttpResponse;
 
-class HttpRequestFactoryTest extends TestCase {
+class HttpRequestMiddlewareTest extends TestCase {
 
     function testWithoutMiddleware() {
         $response           = new HttpResponse();
-        $factory            = new HttpRequestMiddlewareMiddleware(
+        $factory            = new HttpRequestMiddleware(
             new HttpRequestFactoryTestHttpClient($response)
         );
         $request            = new HttpClientRequest("GET", "https://www.google.com");
@@ -30,7 +30,7 @@ class HttpRequestFactoryTest extends TestCase {
 
     function testWithMiddleware() {
         $response           = new HttpResponse();
-        $factory            = new HttpRequestMiddlewareMiddleware(
+        $factory            = new HttpRequestMiddleware(
             new HttpRequestFactoryTestHttpClient($response),
             new HttpRequestFactoryTestMiddleware((new HttpResponse)->withStatus($modifiedStatusCode = 204))
         );

@@ -27,6 +27,17 @@ class HttpResponseFactoryTest extends TestCase {
         ]);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
+    function testEmitResponse() {
+        $httpResponse   = (new HttpResponseFactory)->createResponse(200);
+        ob_start();
+        (new HttpResponseFactory)->emitResponse($httpResponse);
+        ob_end_clean();
+        $this->assertTrue(true);
+    }
+
     function testCreateJsonObjectSerializable() {
         $response = (new HttpResponseFactory)->createJsonResponse(200, new HttpResponseFactoryTestJsonObject);
         $this->assertEquals([

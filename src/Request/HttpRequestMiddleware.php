@@ -5,7 +5,7 @@ use Terrazza\Component\Http\Response\IHttpResponse;
 use Generator;
 use Psr\Http\Client\ClientInterface;
 
-class HttpRequestMiddlewareMiddleware implements IHttpRequestMiddlewareFactory {
+class HttpRequestMiddleware implements IHttpRequestMiddlewareFactory {
     /** @var IHttpRequestMiddleware[] */
     private array $middlewares;
 
