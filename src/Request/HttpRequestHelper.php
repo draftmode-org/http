@@ -248,6 +248,7 @@ trait HttpRequestHelper {
             $argumentRegx                           = '#\{([\w\_]+)\}#';
             $pathArgs                               = [];
             $uriArgs                                = [];
+            $routeUri                               = "/". trim($routeUri, "/");
             if (preg_match_all($argumentRegx, $routeUri, $matches)) {
                 $pathArgs                           = $matches[1] ?? [];
             }

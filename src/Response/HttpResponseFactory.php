@@ -1,9 +1,19 @@
 <?php
 namespace Terrazza\Component\Http\Response;
 use JsonSerializable;
+use Terrazza\Component\Http\Message\HttpMessageAdapter;
 use UnexpectedValueException;
 
 class HttpResponseFactory implements IHttpResponseFactory {
+
+    /**
+     * @param IHttpResponse $response
+     */
+    public function emitResponse(IHttpResponse $response) : void {
+        $messageAdapter                         = new HttpMessageAdapter();
+        $messageAdapter->emitResponse($response);
+    }
+
     /**
      * @param int $code
      * @param string $reasonPhrase

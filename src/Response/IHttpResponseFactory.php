@@ -4,6 +4,11 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 interface IHttpResponseFactory extends ResponseFactoryInterface {
     /**
+     * @param IHttpResponse $response
+     */
+    public function emitResponse(IHttpResponse $response) : void;
+
+    /**
      * @param int $code
      * @param string $reasonPhrase
      * @return IHttpResponse
