@@ -102,7 +102,7 @@ class UploadedFile implements UploadedFileInterface {
             $this->stream                           = (new HttpStreamFactory)->createStreamFromResource($streamOrFile);
         } elseif ($streamOrFile instanceof StreamInterface) {
             $this->stream                           = $streamOrFile;
-            if ($streamOrFile instanceof IHttpStream) {
+            if ($streamOrFile instanceof HttpStreamInterface) {
                 if (!$this->getClientFilename()) {
                     $this->clientFilename           = $streamOrFile->getFileName();
                 }

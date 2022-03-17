@@ -11,7 +11,7 @@ use Terrazza\Component\Http\Stream\UploadedFile;
 /**
  * PSR-7 request implementation.
  */
-class HttpServerRequest implements IHttpServerRequest {
+class HttpServerRequest implements HttpServerRequestInterface {
     use HttpMessageHelper;
     use HttpRequestHelper;
 

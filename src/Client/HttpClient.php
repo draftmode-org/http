@@ -6,18 +6,17 @@ use Terrazza\Component\Http\Client\Exception\HttpClientInvalidHeaderException;
 use Terrazza\Component\Http\Client\Exception\HttpClientNetworkException;
 use Terrazza\Component\Http\Client\Exception\HttpClientRequestException;
 use InvalidArgumentException;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Client\RequestExceptionInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use RuntimeException;
 use Terrazza\Component\Http\Client\Exception\HttpClientUnsupportedProtocolVersionException;
+use Terrazza\Component\Http\Request\HttpRequestInterface;
+use Terrazza\Component\Http\Response\HttpResponseInterface;
+use Terrazza\Component\Http\Response\HttpResponseFactoryInterface;
 use UnexpectedValueException;
 
-class HttpClient implements ClientInterface {
+class HttpClient implements HttpClientInterface {
 	/**
 	 * cURL options.
 	 *
@@ -28,9 +27,9 @@ class HttpClient implements ClientInterface {
 	/**
 	 * PSR-17 response factory.
 	 *
-	 * @var ResponseFactoryInterface
+	 * @var HttpResponseFactoryInterface
 	 */
-	private ResponseFactoryInterface $responseFactory;
+	private HttpResponseFactoryInterface $responseFactory;
 
 	/**
 	 * PSR-17 stream factory.
@@ -49,7 +48,7 @@ class HttpClient implements ClientInterface {
 	/**
 	 * Create HTTP client.
 	 *
-	 * @param ResponseFactoryInterface $responseFactory PSR-17 HTTP response factory.
+	 * @param HttpResponseFactoryInterface $responseFactory PSR-17 HTTP response factory.
 	 * @param StreamFactoryInterface   $streamFactory   PSR-17 HTTP stream factory.
 	 * @param array                         $options         cURL options
 	 *                                                       {@link http://php.net/curl_setopt}.
@@ -57,9 +56,9 @@ class HttpClient implements ClientInterface {
 	 * @since 2.0 Accepts PSR-17 factories instead of HTTPlug ones.
 	 */
 	public function __construct(
-		ResponseFactoryInterface $responseFactory,
-		StreamFactoryInterface $streamFactory,
-		array $options = []
+        HttpResponseFactoryInterface $responseFactory,
+        StreamFactoryInterface       $streamFactory,
+        array                        $options = []
 	) {
 		$this->responseFactory = $responseFactory;
 		$this->streamFactory = $streamFactory;
@@ -110,16 +109,16 @@ class HttpClient implements ClientInterface {
 	/**
 	 * Sends a PSR-7 request and returns a PSR-7 response.
 	 *
-	 * @param RequestInterface $request
+	 * @param HttpRequestInterface $request
 	 *
-	 * @return ResponseInterface
+	 * @return HttpResponseInterface
 	 *
 	 * @throws InvalidArgumentException  For invalid header names or values.
 	 * @throws RuntimeException          If creating the body stream fails.
 	 * @throws NetworkExceptionInterface In case of network problems.
 	 * @throws RequestExceptionInterface On invalid request.
 	 */
-	public function sendRequest(RequestInterface $request): ResponseInterface {
+	public function sendRequest(HttpRequestInterface $request): HttpResponseInterface {
 		$response                                   = $this->initResponse();
 		$requestOptions                             = $this->prepareRequestOptions($request,
 			$this->getHeaderFunction($response),
@@ -155,10 +154,10 @@ class HttpClient implements ClientInterface {
 	}
 
     /**
-     * @param ResponseInterface $response
+     * @param HttpResponseInterface $response
      * @return callable
      */
-	protected function getHeaderFunction(ResponseInterface &$response): callable {
+	protected function getHeaderFunction(HttpResponseInterface &$response): callable {
 		return function ($ch, $data) use (&$response) {
 			$str                                    = trim($data);
 			if ($str !== '') {
@@ -194,10 +193,10 @@ class HttpClient implements ClientInterface {
 	}
 
     /**
-     * @param ResponseInterface $response
+     * @param HttpResponseInterface $response
      * @return callable
      */
-    protected function getBodyFunction(ResponseInterface $response): callable {
+    protected function getBodyFunction(HttpResponseInterface $response): callable {
 		return function($ch, $data) use ($response) {
 			$response->getBody()->write($data);
 			return strlen($data);
@@ -207,9 +206,9 @@ class HttpClient implements ClientInterface {
 	/**
 	 * Create builder to use for building response object.
 	 *
-	 * @return ResponseInterface
+	 * @return HttpResponseInterface
 	 */
-	protected function initResponse(): ResponseInterface {
+	protected function initResponse(): HttpResponseInterface {
 		$body = $this->streamFactory->createStreamFromFile('php://temp', 'w+b');
 		return $this->responseFactory
 			->createResponse(200)
@@ -219,7 +218,7 @@ class HttpClient implements ClientInterface {
 	/**
 	 * Update cURL options for given request and hook in the response builder.
 	 *
-	 * @param RequestInterface $request         HttpClientRequest on which to create options.
+	 * @param HttpRequestInterface $request         HttpClientRequest on which to create options.
 	 * @param callable $headerFunction
 	 * @param callable $bodyFunction
 	 *
@@ -230,7 +229,7 @@ class HttpClient implements ClientInterface {
 	 * @throws RequestExceptionInterface On invalid request.
 	 */
 	protected function prepareRequestOptions(
-		RequestInterface $request,
+        HttpRequestInterface $request,
 		callable $headerFunction,
 		callable $bodyFunction
 	): array {
@@ -279,12 +278,12 @@ class HttpClient implements ClientInterface {
 	/**
 	 * Add request body related cURL options.
 	 *
-	 * @param RequestInterface $request     HttpClientRequest on which to create options.
-	 * @param array            $curlOptions Options created by prepareRequestOptions().
+	 * @param HttpRequestInterface  $request     HttpClientRequest on which to create options.
+	 * @param array                 $curlOptions Options created by prepareRequestOptions().
 	 *
 	 * @return array cURL options based on request.
 	 */
-	protected function addRequestBodyOptions(RequestInterface $request, array $curlOptions): array {
+	protected function addRequestBodyOptions(HttpRequestInterface $request, array $curlOptions): array {
 		/*
 		 * Some HTTP methods cannot have payload:
 		 *
@@ -329,12 +328,12 @@ class HttpClient implements ClientInterface {
 	/**
 	 * Create headers array for CURLOPT_HTTPHEADER.
 	 *
-	 * @param RequestInterface $request     HttpClientRequest on which to create headers.
-	 * @param array            $curlOptions Options created by prepareRequestOptions().
+	 * @param HttpRequestInterface  $request     HttpClientRequest on which to create headers.
+	 * @param array                 $curlOptions Options created by prepareRequestOptions().
 	 *
 	 * @return string[]
 	 */
-	private function createHeaders(RequestInterface $request, array $curlOptions): array {
+	private function createHeaders(HttpRequestInterface $request, array $curlOptions): array {
 		$curlHeaders                                = [];
 		$headers                                    = $request->getHeaders();
 		foreach ($headers as $name => $values) {

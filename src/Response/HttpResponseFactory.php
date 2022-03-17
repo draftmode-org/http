@@ -4,12 +4,12 @@ use JsonSerializable;
 use Terrazza\Component\Http\Message\HttpMessageAdapter;
 use UnexpectedValueException;
 
-class HttpResponseFactory implements IHttpResponseFactory {
+class HttpResponseFactory implements HttpResponseFactoryInterface {
 
     /**
-     * @param IHttpResponse $response
+     * @param HttpResponseInterface $response
      */
-    public function emitResponse(IHttpResponse $response) : void {
+    public function emitResponse(HttpResponseInterface $response) : void {
         $messageAdapter                         = new HttpMessageAdapter();
         $messageAdapter->emitResponse($response);
     }
@@ -17,9 +17,9 @@ class HttpResponseFactory implements IHttpResponseFactory {
     /**
      * @param int $code
      * @param string $reasonPhrase
-     * @return IHttpResponse
+     * @return HttpResponseInterface
      */
-    public function createResponse(int $code = 200, string $reasonPhrase = '') : IHttpResponse {
+    public function createResponse(int $code = 200, string $reasonPhrase = '') : HttpResponseInterface {
         return new HttpResponse(
             $code,
             [],
@@ -32,9 +32,9 @@ class HttpResponseFactory implements IHttpResponseFactory {
     /**
      * @param int $responseCode
      * @param $content
-     * @return IHttpResponse
+     * @return HttpResponseInterface
      */
-    public function createJsonResponse(int $responseCode, $content) : IHttpResponse {
+    public function createJsonResponse(int $responseCode, $content) : HttpResponseInterface {
         if (is_array($content)) {
             $content                                = json_encode($content);
         } elseif (is_object($content)) {

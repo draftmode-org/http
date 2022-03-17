@@ -9,8 +9,8 @@ use Terrazza\Component\Http\Request\HttpRequestHelper;
 class HttpRequestHelperTest extends TestCase {
 
     function testSetters() {
-        $c = new HttpRequestHelperTestTrait;
-        $request = new HttpClientRequest("GET", "https://www.cnn.com");
+        $c          = new HttpRequestHelperTestTrait;
+        $request    = new HttpClientRequest("GET", "https://www.cnn.com");
         $this->assertEquals([
             $method = "GET",
             $uri = "www.google.at",

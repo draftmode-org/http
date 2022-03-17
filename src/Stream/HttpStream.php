@@ -3,7 +3,7 @@ namespace Terrazza\Component\Http\Stream;
 use InvalidArgumentException;
 use RuntimeException;
 
-class HttpStream implements IHttpStream {
+class HttpStream implements HttpStreamInterface {
     /**
      * @see http://php.net/manual/function.fopen.php
      * @see http://php.net/manual/en/function.gzopen.php

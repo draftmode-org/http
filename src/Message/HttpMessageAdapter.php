@@ -2,17 +2,17 @@
 declare(strict_types=1);
 namespace Terrazza\Component\Http\Message;
 
-use Psr\Http\Message\ResponseInterface;
 use Terrazza\Component\Http\Request\HttpServerRequest;
-use Terrazza\Component\Http\Request\IHttpServerRequest;
-use Terrazza\Component\Http\Stream\IHttpStreamFactory;
+use Terrazza\Component\Http\Request\HttpServerRequestInterface;
+use Terrazza\Component\Http\Response\HttpResponseInterface;
+use Terrazza\Component\Http\Stream\HttpStreamFactory;
 use Terrazza\Component\Http\Stream\UploadedFile;
 use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use Terrazza\Component\Http\Message\Uri\Uri;
 
-class HttpMessageAdapter implements IHttpMessageAdapter {
+class HttpMessageAdapter implements HttpMessageAdapterInterface {
     /**
      * Return a ServerRequest populated with superglobals:
      * $_GET
@@ -22,7 +22,8 @@ class HttpMessageAdapter implements IHttpMessageAdapter {
      * $_SERVER
      * @noinspection SpellCheckingInspection
      */
-    public function getServerRequestFromGlobals(IHttpStreamFactory $streamFactory): IHttpServerRequest {
+    public function getServerRequestFromGlobals(): HttpServerRequestInterface {
+        $streamFactory                              = new HttpStreamFactory();
         $method                                     = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $headers                                    = $this->getAllHeaders();
         $uri                                        = $this->getUriFromGlobals();
@@ -57,9 +58,9 @@ class HttpMessageAdapter implements IHttpMessageAdapter {
     }
 
     /**
-     * @param ResponseInterface $response
+     * @param HttpResponseInterface $response
      */
-    public function emitResponse(ResponseInterface $response): void {
+    public function emitResponse(HttpResponseInterface $response): void {
         //
         // http header
         //

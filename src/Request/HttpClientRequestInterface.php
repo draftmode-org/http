@@ -1,9 +1,8 @@
 <?php
 namespace Terrazza\Component\Http\Request;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
-interface IHttpClientRequest extends RequestInterface {
+interface HttpClientRequestInterface extends HttpRequestInterface {
     public function withContentType(string $contentType) :self;
     public function withContent(string $contentType, $body) : self;
     //

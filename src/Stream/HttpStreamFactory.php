@@ -3,12 +3,12 @@ namespace Terrazza\Component\Http\Stream;
 use InvalidArgumentException;
 use RuntimeException;
 
-class HttpStreamFactory implements IHttpStreamFactory {
+class HttpStreamFactory implements HttpStreamFactoryInterface {
     /**
      * @param string $content
-     * @return IHttpStream
+     * @return HttpStreamInterface
      */
-    public function createStream(string $content=""): IHttpStream {
+    public function createStream(string $content=""): HttpStreamInterface {
         $stream                                     = fopen('php://temp', "r+");
         // @codeCoverageIgnoreStart
         if ($stream === false) {
@@ -24,9 +24,9 @@ class HttpStreamFactory implements IHttpStreamFactory {
      * @param string $filename
      * @param string $mode
      * @param int $bufferSize
-     * @return IHttpStream
+     * @return HttpStreamInterface
      */
-    public function createStreamFromFile(string $filename, string $mode = 'r', int $bufferSize=0): IHttpStream {
+    public function createStreamFromFile(string $filename, string $mode = 'r', int $bufferSize=0): HttpStreamInterface {
         $resource                                   = @fopen($filename, $mode);
         if ($resource === false) {
             throw new InvalidArgumentException(sprintf('invalid file %s to create stream', $filename));
@@ -42,7 +42,7 @@ class HttpStreamFactory implements IHttpStreamFactory {
         return $stream;
     }
 
-    public function createStreamFromResource($resource): IHttpStream {
+    public function createStreamFromResource($resource): HttpStreamInterface {
         if (!is_resource($resource)) {
             throw new InvalidArgumentException('resource must be a resource');
         }

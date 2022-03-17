@@ -2,33 +2,35 @@
 namespace Terrazza\Component\Http\Tests\Client;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Terrazza\Component\Http\Client\Exception\HttpClientException;
 use Terrazza\Component\Http\Client\Exception\HttpClientRequestException;
+use Terrazza\Component\Http\Client\HttpClientInterface;
 use Terrazza\Component\Http\Message\Uri\Uri;
 use Terrazza\Component\Http\Request\HttpClientRequest;
+use Terrazza\Component\Http\Request\HttpRequestInterface;
 use Terrazza\Component\Http\Response\HttpResponse;
 use Terrazza\Component\Http\Response\HttpResponseFactory;
+use Terrazza\Component\Http\Response\HttpResponseInterface;
 use Terrazza\Component\Http\Stream\HttpStreamFactory;
 use Terrazza\Component\Http\Client\HttpClient;
 use Terrazza\Component\Http\Client\Exception\HttpClientNetworkException;
 use UnexpectedValueException;
 
 class HttpClientTest extends TestCase {
-    protected function getClient() : ClientInterface {
+    protected function getClient() : HttpClientInterface {
         return new HttpClient(
             new HttpResponseFactory(),
             new HttpStreamFactory()
         );
     }
+
     public function getClientTest() : HttpClientTestClass {
         return new HttpClientTestClass(
             new HttpResponseFactory(),
             new HttpStreamFactory()
         );
     }
+
     function testUriNotFound() {
         $client = $this->getClient();
         $this->expectException(HttpClientNetworkException::class);
@@ -208,20 +210,20 @@ class HttpClientTest extends TestCase {
 class HttpClientTestClass extends HttpClient {
     private bool $protocolVersionException=false;
 
-    public function prepareRequestOptions(RequestInterface $request, callable $headerFunction, callable $bodyFunction): array {
+    public function prepareRequestOptions(HttpRequestInterface $request, callable $headerFunction, callable $bodyFunction): array {
         return parent::prepareRequestOptions($request, $headerFunction, $bodyFunction);
     }
-    public function getHeaderFunction(ResponseInterface &$response): callable{
+    public function getHeaderFunction(HttpResponseInterface &$response): callable{
         return parent::getHeaderFunction($response);
     }
-    public function getBodyFunction(ResponseInterface $response): callable {
+    public function getBodyFunction(HttpResponseInterface $response): callable {
         return parent::getBodyFunction($response);
     }
-    private ?ResponseInterface $response=null;
-    public function setResponse(ResponseInterface $response) : void {
+    private ?HttpResponseInterface $response=null;
+    public function setResponse(HttpResponseInterface $response) : void {
         $this->response = $response;
     }
-    public function initResponse(): ResponseInterface {
+    public function initResponse(): HttpResponseInterface {
         return $this->response ?? parent::initResponse();
     }
     public function setProtocolVersionException() {
@@ -234,7 +236,7 @@ class HttpClientTestClass extends HttpClient {
             return parent::getProtocolVersion($requestVersion);
         }
     }
-    public function addRequestBodyOptions(RequestInterface $request, array $curlOptions): array {
+    public function addRequestBodyOptions(HttpRequestInterface $request, array $curlOptions): array {
         return parent::addRequestBodyOptions($request, $curlOptions);
     }
 }

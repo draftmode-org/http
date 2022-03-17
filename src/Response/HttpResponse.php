@@ -10,7 +10,7 @@ use Psr\Http\Message\StreamInterface;
 /**
  * PSR-7 response implementation.
  */
-class HttpResponse implements IHttpResponse {
+class HttpResponse implements HttpResponseInterface {
     use HttpMessageHelper;
 
     /** Map of standard HTTP status code/reason phrases */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Terrazza\Component\Http\Message;
 
-use Terrazza\Component\Http\Stream\IHttpStream;
+use Terrazza\Component\Http\Stream\HttpStreamInterface;
 use Terrazza\Component\Http\Stream\HttpStreamFactory;
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
@@ -122,7 +122,7 @@ trait HttpMessageHelper {
         return $this;
     }
 
-    public function getBody(): IHttpStream {
+    public function getBody(): HttpStreamInterface {
         return $this->stream ??= (new HttpStreamFactory)->createStream($this->body ?? "");
     }
 

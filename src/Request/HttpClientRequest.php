@@ -6,7 +6,7 @@ use Terrazza\Component\Http\Message\HttpMessageHelper;
 use Terrazza\Component\Http\Message\Uri\Uri;
 use Terrazza\Component\Http\Request\Exception\HttpRequestInvalidUploadFileException;
 use Terrazza\Component\Http\Request\Exception\HttpRequestUnexpectedBodyException;
-use Terrazza\Component\Http\Stream\IHttpStream;
+use Terrazza\Component\Http\Stream\HttpStreamInterface;
 use Terrazza\Component\Http\Stream\HttpStreamFactory;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -16,7 +16,7 @@ use Throwable;
 /**
  * PSR-7 request implementation.
  */
-class HttpClientRequest implements IHttpClientRequest {
+class HttpClientRequest implements HttpClientRequestInterface {
     use HttpMessageHelper;
     use HttpRequestHelper;
 
@@ -73,9 +73,9 @@ class HttpClientRequest implements IHttpClientRequest {
     }
 
     /**
-     * @return IHttpStream
+     * @return HttpStreamInterface
      */
-    public function getBody(): IHttpStream {
+    public function getBody(): HttpStreamInterface {
         if ($this->stream) {
             return $this->stream;
         }
