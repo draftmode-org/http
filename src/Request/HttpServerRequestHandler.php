@@ -1,15 +1,14 @@
 <?php
-declare(strict_types=1);
 namespace Terrazza\Component\Http\Request;
-use Terrazza\Component\Http\Message\HttpMessageAdapter;
+use Terrazza\Component\Http\Response\HttpResponseInterface;
 
 class HttpServerRequestHandler implements HttpServerRequestHandlerInterface {
-
-    public function handle(HttpRequestHandlerInterface $requestHandler): void {
-        $messageAdapter                             = new HttpMessageAdapter();
-        $serverRequest                              = $messageAdapter->getServerRequestFromGlobals();
-        //
-        $response                                   = $requestHandler->handle($serverRequest);
-        $messageAdapter->emitResponse($response);
+    /**
+     * @param HttpServerRequestInterface $request
+     * @param HttpRequestHandlerInterface $requestHandler
+     * @return HttpResponseInterface
+     */
+    public function handle(HttpRequestInterface $request, HttpRequestHandlerInterface $requestHandler): HttpResponseInterface {
+        return $requestHandler->handle($request);
     }
 }

@@ -252,7 +252,7 @@ trait HttpRequestHelper {
             if (preg_match_all($argumentRegx, $routeUri, $matches)) {
                 $pathArgs                           = $matches[1] ?? [];
             }
-            $requestUri                             = $this->getRequestTarget();
+            $requestUri                             = $this->getUri()->getPath();
             $routeUri                               = '^' . preg_replace($argumentRegx, '(.+?)', $routeUri) . '$';
             if (preg_match("#".$routeUri."#", "/" . trim($requestUri, "/"), $matches)) {
                 $uriArgs                            = array_slice($matches, 1);

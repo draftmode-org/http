@@ -1,18 +1,15 @@
 <?php
-namespace Terrazza\Component\Http\Middleware;
+namespace Terrazza\Component\Http\Request;
 use Generator;
-use Terrazza\Component\Http\Message\HttpMessageAdapter;
-use Terrazza\Component\Http\Request\HttpRequestHandlerInterface;
-use Terrazza\Component\Http\Request\HttpRequestInterface;
 use Terrazza\Component\Http\Response\HttpResponseInterface;
 
 class HttpRequestMiddlewareHandler implements HttpRequestMiddlewareHandlerInterface {
     /**
-     * @var array|HttpRequestMiddlewareInterface[]
+     * @var array|HttpRequestMiddlewareHandlerInterface[]
      */
     private array $middlewares;
-    public function __construct(array $middlewares){
-        $this->middlewares                          = $middlewares ?? [];
+    public function __construct(HttpRequestMiddlewareHandlerInterface ...$middlewares){
+        $this->middlewares                          = $middlewares;
     }
 
     /**
@@ -24,11 +21,16 @@ class HttpRequestMiddlewareHandler implements HttpRequestMiddlewareHandlerInterf
         }
     }
 
-    public function handle(HttpRequestInterface $request, HttpRequestHandlerInterface $requestHandler): void {
+    /**
+     * @param HttpRequestInterface $request
+     * @param HttpRequestHandlerInterface $requestHandler
+     * @return HttpResponseInterface
+     */
+    public function handle(HttpRequestInterface $request, HttpRequestHandlerInterface $requestHandler): HttpResponseInterface {
         //
         // middleware concept
         //
-        $response                                   = (new class ($this->getGenerator(), $requestHandler) implements HttpRequestHandlerInterface {
+        return (new class ($this->getGenerator(), $requestHandler) implements HttpRequestHandlerInterface {
             private Generator $generator;
             private HttpRequestHandlerInterface $requestHandler;
 
@@ -41,16 +43,11 @@ class HttpRequestMiddlewareHandler implements HttpRequestMiddlewareHandlerInterf
                 if (!$this->generator->valid()) {
                     return $this->requestHandler->handle($request);
                 }
-                /** @var HttpRequestMiddlewareInterface $current */
+                /** @var HttpRequestMiddlewareHandlerInterface $current */
                 $current                            = $this->generator->current();
                 $this->generator->next();
                 return $current->handle($request, $this);
             }
         })->handle($request);
-        //
-        // emit response
-        //
-        $messageAdapter                             = new HttpMessageAdapter();
-        $messageAdapter->emitResponse($response);
     }
 }

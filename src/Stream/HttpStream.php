@@ -238,7 +238,7 @@ class HttpStream implements HttpStreamInterface {
             throw new RuntimeException('unable to read stream contents');
         }
         // @codeCoverageIgnoreEnd
-        if ($rewindAfterReading) {
+        if (!$rewindAfterReading) {
             $this->rewind();
         }
         return $contents;
