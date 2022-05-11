@@ -243,7 +243,7 @@ trait HttpRequestHelper {
      * custom extensions - start
      */
 
-    private function getPathParams(string $routeUri) : array {
+    public function getPathParams(string $routeUri) : array {
         if (is_null($this->pathArguments)) {
             $argumentRegx                           = '#\{([\w\_]+)\}#';
             $pathArgs                               = [];

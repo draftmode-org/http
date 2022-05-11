@@ -8,6 +8,7 @@ interface HttpServerRequestInterface extends ServerRequestInterface, HttpRequest
     public function getCookieParam(string $paramKey) :?string;
     //
     public function getPathParam(string $routeUri, string $argumentName) :?string;
+    public function getPathParams(string $routeUri) : array;
     public function getQueryParam(string $argumentName) :?string;
     //
     public function isValidBody() : void;
