@@ -230,7 +230,7 @@ class HttpStream implements HttpStreamInterface {
         return $string;
     }
 
-    public function getContents(bool $rewindAfterReading=false): string {
+    public function getContents(bool $autoRewind=true): string {
         $this->checkStream();
         $contents                                   = stream_get_contents($this->stream);
         // @codeCoverageIgnoreStart
@@ -238,7 +238,7 @@ class HttpStream implements HttpStreamInterface {
             throw new RuntimeException('unable to read stream contents');
         }
         // @codeCoverageIgnoreEnd
-        if (!$rewindAfterReading) {
+        if ($autoRewind) {
             $this->rewind();
         }
         return $contents;

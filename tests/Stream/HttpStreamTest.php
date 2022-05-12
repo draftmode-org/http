@@ -19,7 +19,7 @@ class HttpStreamTest extends TestCase {
             substr($content,0, $read = 4),
             substr($content, $read),
             strlen($newContent),
-            23
+            10
         ],[
             $stream->getSize(),
             $stream->isReadable(),
@@ -35,12 +35,12 @@ class HttpStreamTest extends TestCase {
 
     function testGetContentAndEof() {
         $stream = (new HttpStreamFactory())->createStream($content = "thisIsContent");
-        $stream->getContents(true);
+        $stream->getContents();
         $this->assertEquals([
             $content,
             true,
         ],[
-            $stream->getContents(),
+            $stream->getContents(false),
             $stream->eof()
         ]);
     }

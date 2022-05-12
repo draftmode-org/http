@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terrazza\Component\Http\Message;
 
+use Terrazza\Component\Http\Stream\HttpStream;
 use Terrazza\Component\Http\Stream\HttpStreamInterface;
 use Terrazza\Component\Http\Stream\HttpStreamFactory;
 use InvalidArgumentException;
@@ -14,7 +15,7 @@ use Psr\Http\Message\UploadedFileInterface;
  * Trait implementing functionality common to requests and responses.
  */
 trait HttpMessageHelper {
-	
+
     /** @var array<string, string[]> Map of all registered headers, as original name => array of values */
     private array $headers = [];
 
@@ -24,8 +25,8 @@ trait HttpMessageHelper {
     /** @var string */
     private string $protocolVersion = '1.1';
 
-    /** @var StreamInterface|null */
-    private ?StreamInterface $stream = null;
+    /** @var HttpStreamInterface|null */
+    private ?HttpStreamInterface $stream = null;
 
     /** @var mixed|null */
     private $body = null;
@@ -39,10 +40,10 @@ trait HttpMessageHelper {
         return $this->protocolVersion;
     }
 
-	/**
-	 * @param string $version
-	 * @return static
-	 */
+    /**
+     * @param string $version
+     * @return static
+     */
     public function withProtocolVersion($version): self {
         if ($this->protocolVersion === $version) {
             return $this;
@@ -53,9 +54,9 @@ trait HttpMessageHelper {
         return $message;
     }
 
-	/**
-	 * @return string[][]
-	 */
+    /**
+     * @return string[][]
+     */
     public function getHeaders(): array {
         return $this->headers;
     }
@@ -64,25 +65,25 @@ trait HttpMessageHelper {
         return array_key_exists(strtolower($header), $this->headerMapping);
     }
 
-	/**
-	 * @param string $header
-	 * @return string[]
-	 */
+    /**
+     * @param string $header
+     * @return string[]
+     */
     public function getHeader($header): array {
-	    $headerKey                                  = strtolower($header);
+        $headerKey                                  = strtolower($header);
         return array_key_exists($headerKey, $this->headerMapping) ?
-	        $this->headers[$this->headerMapping[$headerKey]] : [];
+            $this->headers[$this->headerMapping[$headerKey]] : [];
     }
 
     public function getHeaderLine($header): string {
         return implode(', ', $this->getHeader($header));
     }
 
-	/**
-	 * @param string $name
-	 * @param string|string[] $value
-	 * @return static
-	 */
+    /**
+     * @param string $name
+     * @param string|string[] $value
+     * @return static
+     */
     public function withHeader($name, $value): self {
         $this->assertHeader($name);
         $value                                      = $this->normalizeHeaderValue($value);
@@ -94,28 +95,28 @@ trait HttpMessageHelper {
         return $message;
     }
 
-	/**
-	 * @param string $name
-	 * @param string|string[] $value
-	 * @return static
-	 */
+    /**
+     * @param string $name
+     * @param string|string[] $value
+     * @return static
+     */
     public function withAddedHeader($name, $value): self {
         $this->assertHeader($name);
         $value                                      = $this->normalizeHeaderValue($value);
-	    $headerKey                                  = strtolower($name);
-	    // add header
+        $headerKey                                  = strtolower($name);
+        // add header
         $message                                    = clone $this;
         $message->headers[$name]                    = array_merge($this->headers[$name] ?? [], $value);
         $message->headerMapping[$headerKey]         = $name;
         return $message;
     }
 
-	/**
-	 * @param string $name
-	 * @return static
-	 */
+    /**
+     * @param string $name
+     * @return static
+     */
     public function withoutHeader($name): self {
-	    $headerKey                                  = strtolower($name);
+        $headerKey                                  = strtolower($name);
         $name                                       = $this->headerMapping[$headerKey];
         // remove header
         unset($this->headers[$name], $this->headerMapping[$headerKey]);
@@ -130,19 +131,26 @@ trait HttpMessageHelper {
         }
     }
 
-    public function withBody(StreamInterface $body): self {
-        if ($this->stream === $body) {
-            return $this;
+    /**
+     * @param $body
+     * @return $this
+     */
+    public function withBody($body): self {
+        if ($body instanceof HttpStreamInterface) {
+            $message                                = clone $this;
+            $message->stream                        = $body;
+            return $message;
+        } elseif (is_scalar($body) || is_null($body)) {
+            $message                                = clone $this;
+            $message->stream                        = (new HttpStreamFactory())->createStream($body ?? "");
+            return $message;
         }
-        //
-        $message                                    = clone $this;
-        $message->stream                            = $body;
-        return $message;
+        throw new InvalidArgumentException("withBody expected HttpStreamInterface or scalar, given ".  gettype($body));
     }
 
-	/**
-	 * @param array $headers
-	 */
+    /**
+     * @param array $headers
+     */
     private function setHeaders(array $headers): void {
         $this->headerMapping                        = [];
         $this->headers                              = [];
@@ -156,8 +164,8 @@ trait HttpMessageHelper {
             $value                                  = $this->normalizeHeaderValue($value);
             $headerKey                              = strtolower($header);
 
-	        $header                                 = $this->headerMapping[$headerKey] ??= $header;
-	   	    $this->headers[$header]                 = array_merge($this->headers[$header] ?? [], $value);
+            $header                                 = $this->headerMapping[$headerKey] ??= $header;
+            $this->headers[$header]                 = array_merge($this->headers[$header] ?? [], $value);
         }
     }
 
